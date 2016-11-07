@@ -1,0 +1,4 @@
+website="http://www.visitakureyri.is"
+sub_link="/en/things-to-do/attractions"
+new_list(content_selection=".boxText .entryTitle", title="Topic", is_picture="False", placement(width="Center", height="100", justify="center", anchor="n"), font(type="FreeSans", size="22", weight="bold"))
+addto_list(content_selection=".boxText .entryContent", title="Content", is_picture="False", placement(width="Center", height="300", justify="center", anchor="n"), font(type="FreeSerif", size="12", weight="normal"))
