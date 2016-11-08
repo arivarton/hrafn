@@ -5,9 +5,13 @@ import pickle
 
 WORK_DIR = os.getcwd()
 DB_DIR = os.path.join(WORK_DIR, 'crawl-DB')
+PICTURE_STORAGE = os.path.join(WORK_DIR, 'crawl-images')
+STANDARD_DICT = {'crawl': [], 'is picture': {}}
 
 if not os.path.exists(DB_DIR):
     os.makedirs(DB_DIR)
+if not os.path.exists(PICTURE_STORAGE):
+    os.makedirs(PICTURE_STORAGE)
 
 def list_number_evaluation(list_number, list_number_selection, selection):
     selectionsDictionary = {}
@@ -43,7 +47,7 @@ class ArticleCrawler():
     """
     def __init__(self, website):
         self.website = website
-        self.list = []
+        self.list = STANDARD_DICT
         self.selections = []
         self.request = None
         self.db_file = os.path.join(DB_DIR, self.website.split(".", 1)[1] + ".db")
@@ -54,16 +58,24 @@ class ArticleCrawler():
         self.request = sub_link
 
     def new_list(self, content_selection, title, get_selection=None, list_number=None, list_number_selection=None, is_picture=False):
-        self.list.clear()
+        self.list = STANDARD_DICT
         self.selections.clear()
         selectionsDictionary = {}
         selection = self.soup.select(content_selection)
         selectionsDictionary, selection = list_number_evaluation(list_number, list_number_selection, selection)
+        self.list['is picture'].update({title: is_picture})
         for object in selection:
-            if get_selection == None:
-                self.list.append({title: object.getText().strip()})
+            if is_picture:
+                picture_link = self.website + object.get("href")
+                absolute_picture_path = os.path.join(PICTURE_STORAGE, os.path.split(picture_link)[1])
+                picture = open(absolute_picture_path, 'wb')
+                picture.write(requests.get(picture_link).content)
+                picture.close()
+                self.list['crawl'][count].update({title: absolute_picture_path})
+            elif get_selection == None:
+                self.list['crawl'].append({title: object.getText().strip()})
             else:
-                self.list.append({title: object.get(get_selection)})
+                self.list['crawl'].append({title: object.get(get_selection)})
         selectionsDictionary.update({'title': title, 'content_selection': content_selection, 'get_selection': get_selection, 'is_picture': is_picture})
         self.selections.append(selectionsDictionary)
         return self.list
@@ -72,11 +84,19 @@ class ArticleCrawler():
         selectionsDictionary = {}
         selection = self.soup.select(content_selection)
         selectionsDictionary, selection = list_number_evaluation(list_number, list_number_selection, selection)
+        self.list['is picture'].update({title: is_picture})
         for count,object in enumerate(selection):
-            if get_selection == None:
-                self.list[count].update({title: object.getText().strip()})
+            if is_picture:
+                picture_link = self.website + object.get("href")
+                absolute_picture_path = os.path.join(PICTURE_STORAGE, os.path.split(picture_link)[1])
+                picture = open(absolute_picture_path, 'wb')
+                picture.write(requests.get(picture_link).content)
+                picture.close()
+                self.list['crawl'][count].update({title: absolute_picture_path})
+            elif get_selection == None:
+                self.list['crawl'][count].update({title: object.getText().strip()})
             else:
-                self.list[count].update({title: object.get(get_selection)})
+                self.list['crawl'][count].update({title: object.get(get_selection)})
         selectionsDictionary.update({'title': title, 'content_selection': content_selection, 'get_selection': get_selection, 'is_picture': is_picture})
         self.selections.append(selectionsDictionary)
         return self.list
@@ -86,6 +106,7 @@ class ArticleCrawler():
         selectionsDictionary = {}
         selection = self.soup.select(content_selection)
         selectionsDictionary, selection = list_number_evaluation(list_number, list_number_selection, selection)
+        self.list['is picture'].update({title: is_picture})
         for count,object in enumerate(selection):
             link = object.get("href")
             request = requests.get(self.website + link)
@@ -93,17 +114,15 @@ class ArticleCrawler():
             selection = soup.select(link_selection)
             if is_picture:
                 picture_link = selection[0].get("href")
-                absolute_picture_path = os.path.join(picture_storage + os.path.split(picture_link)[1])
+                absolute_picture_path = os.path.join(PICTURE_STORAGE + os.path.split(picture_link)[1])
                 picture = open(absolute_picture_path, 'wb')
                 picture.write(requests.get(picture_link).content)
                 picture.close()
-                #self.list[count].update({title: absolute_picture_path, 'is_picture': True})
-                self.list[count].update({title: absolute_picture_path})
+                self.list['crawl'][count].update({title: absolute_picture_path})
             elif get_selection == None:
-                #self.list[count].update({title: selection[0].getText().strip(), 'is_picture': False})
-                self.list[count].update({title: selection[0].getText().strip()})
+                self.list['crawl'][count].update({title: selection[0].getText().strip()})
             else:
-                self.list[count].update({title: selection[0].get(get_selection)})
+                self.list['crawl'][count].update({title: selection[0].get(get_selection)})
         selectionsDictionary.update({'title': title, 'content_selection': content_selection, 'get_selection': get_selection, 'link_selection': link_selection, 'is_picture': is_picture})
         self.selections.append(selectionsDictionary)
     '''

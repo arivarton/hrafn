@@ -70,7 +70,7 @@ class WebConfigFileParser():
         self.placement_anchor = 'n'
         self.font_type = 'NotoSansCJK-Regular'
         self.font_size = '12'
-        self.font_weight = 'Normal'
+        self.font_weight = 'normal'
     def run(self, line):
         #Type of request
         temp = re.search(r'[^(=]+', line)

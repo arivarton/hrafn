@@ -70,7 +70,7 @@ class showWebContent(tk.Tk):
         self.windowWidth = self.winfo_screenwidth()
         self.windowHeight = self.winfo_screenheight()
         self.attributes("-fullscreen", True)
-        self.contentCount = len(contentList)
+        self.contentCount = len(contentList['crawl'])
         self.windowCenterWidth = self.windowWidth / 2
         self.windowCenterHeight = self.windowHeight / 2
         self.original = Image.open(imagePath)
@@ -99,7 +99,7 @@ class showWebContent(tk.Tk):
             self.destroy()
         else:
             self.contentCount -= 1
-            webContent = self.contentList.pop()
+            webContent = self.contentList['crawl'].pop()
             for iter, value in enumerate(webContent):
                 if self.first_run:
                     print(value)
