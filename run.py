@@ -1,6 +1,6 @@
 from glob import glob
 import re
-from hrafnauga import *
+import hrafnauga
 import hrafnaklo
 import crawler
 from os import path
@@ -50,7 +50,8 @@ for item in HRAFNDICTIONARY:
                 crawler = hrafnaklo.WebCrawler()
                 crawled = crawler.run(db_name=db_name, config_file=cleanup)
                 font_and_placement = hrafnaklo.WebFontAndPlacement.run(cleanup)
-                print(font_and_placement)
-            webshow  = showWebContent(crawled, content_placement=font_and_placement['Placement'], content_font=font_and_placement['Font'], display_time=5, word_latency=0)
+                #print(font_and_placement['Placement'])
+                print(crawled)
+            webshow  = hrafnauga.showWebContent(crawled, content_placement=font_and_placement['Placement'], content_font=font_and_placement['Font'], display_time=5, word_latency=0)
             webshow.showInfo()
             webshow.run()

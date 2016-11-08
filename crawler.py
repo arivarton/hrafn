@@ -97,9 +97,11 @@ class ArticleCrawler():
                 picture = open(absolute_picture_path, 'wb')
                 picture.write(requests.get(picture_link).content)
                 picture.close()
-                self.list[count].update({title: absolute_picture_path, 'is_picture': True})
+                #self.list[count].update({title: absolute_picture_path, 'is_picture': True})
+                self.list[count].update({title: absolute_picture_path})
             elif get_selection == None:
-                self.list[count].update({title: selection[0].getText().strip(), 'is_picture': False})
+                #self.list[count].update({title: selection[0].getText().strip(), 'is_picture': False})
+                self.list[count].update({title: selection[0].getText().strip()})
             else:
                 self.list[count].update({title: selection[0].get(get_selection)})
         selectionsDictionary.update({'title': title, 'content_selection': content_selection, 'get_selection': get_selection, 'link_selection': link_selection, 'is_picture': is_picture})

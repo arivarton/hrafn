@@ -6,7 +6,7 @@ from glob import glob
 from datetime import date
 import pickle
 
-hrafnPath = path.dirname(path.abspath(__file__))
+HRAFNPATH = path.dirname(path.abspath(__file__))
 
 #Display images from a list
 class showImage(tk.Tk):
@@ -57,7 +57,7 @@ class showWebContent(tk.Tk):
     """
     Shows content from websites
     """
-    def __init__(self, contentList, content_placement, content_font, display_time=10, word_latency=1, imagePath=(hrafnPath + "/images/background1.png")):
+    def __init__(self, contentList, content_placement, content_font, display_time=10, word_latency=1, imagePath=(HRAFNPATH + "/images/background1.png")):
         """
         contentList must contain lists with 2 objects each, first the topic, second for content.
         """
@@ -86,7 +86,7 @@ class showWebContent(tk.Tk):
         self.time = None
         self.content = None
         self.backgroundImageIteration = 0
-        self.backgroundImageCount = len(listdir(hrafnPath + "/images/"))
+        self.backgroundImageCount = len(listdir(HRAFNPATH + "/images/"))
         self.first_run = True
 
     def showInfo(self):
@@ -102,6 +102,7 @@ class showWebContent(tk.Tk):
             webContent = self.contentList.pop()
             for iter, value in enumerate(webContent):
                 if self.first_run:
+                    print(value)
                     self.canvas_list.append(
                         self.canvas.create_text(
                             dynamicWidth(self.content_placement[value]["Width"]),

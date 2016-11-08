@@ -17,7 +17,7 @@ video_suffix = ["mp4","mkv","avi"]
 picture_suffix = ["jpg","jpeg","gif","png"]
 website_suffix = ["website"]
 
-# Takes a list of files and separates files into categories for images, videos 
+# Takes a list of files and separates them into categories for images, videos
 # and websites
 class SortHrafnContent():
     def __init__(self, list):
