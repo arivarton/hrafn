@@ -1,9 +1,10 @@
 from glob import glob
 import re
+from os import path
+
 import hrafnauga
 import hrafnaklo
 import crawler
-from os import path
 
 HRAFNPATH = path.dirname(path.abspath(__file__))
 ITEMLIST = glob(HRAFNPATH + "/content/*")
@@ -47,8 +48,8 @@ for item in HRAFNDICTIONARY:
             with open(list.pop()) as file:
                 db_name = path.basename(file.name)
                 cleanup = file.readlines()
-                crawler = hrafnaklo.WebCrawler()
-                crawled = crawler.run(db_name=db_name, config_file=cleanup)
+                crawler = hrafnaklo.WebCrawler(db_name=db_name)
+                crawled = crawler.run(config_file=cleanup)
                 font_and_placement = hrafnaklo.WebFontAndPlacement.run(cleanup)
                 #print(font_and_placement['Placement'])
                 print(crawled)

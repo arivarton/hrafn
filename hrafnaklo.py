@@ -149,17 +149,18 @@ class WebConfigFileParser():
             self.font_weight = temp.group(1)
 
 class WebCrawler():
-    def __init__(self):
+    def __init__(self, db_name):
         self.run_check = True
         if not os.path.exists(DBPATH):
             os.makedirs(DBPATH)
+        self.db_name = db_name
 
     def crawl(self, list):
         for line in list:
             attributesFromFile = WebConfigFileParser()
             attributesFromFile.run(line.strip())
             if attributesFromFile.website is not None:
-                catchedContent = crawler.ArticleCrawler(attributesFromFile.website)
+                catchedContent = crawler.ArticleCrawler(website=attributesFromFile.website, db_name=self.db_name)
             elif attributesFromFile.sub_link is not None:
                 catchedContent.new_request(attributesFromFile.sub_link)
             elif attributesFromFile.request_type == 'new_list':
@@ -195,20 +196,20 @@ class WebCrawler():
                     list_number_selection=attributesFromFile.list_number_selection,
                     is_picture=attributesFromFile.is_picture)
                 print('Added crawling content for', attributesFromFile.request_type, 'with title:', attributesFromFile.title)
-        return {'Crawled': catchedContent.list}
+        return {'Crawled': catchedContent.dict}
 
-    def run(self, db_name, config_file):
+    def run(self, config_file):
         def pickleDump():
             self.list = self.crawl(config_file)
             self.list.update({'Date created': str(date.today())})
             self.list.update({'Config file': config_file})
-            pickle.dump(self.list, open(os.path.join(DBPATH, db_name + '.db'), "wb"))
-            print('Crawling content added to database:', db_name)
+            pickle.dump(self.list, open(os.path.join(DBPATH, self.db_name + '.db'), "wb"))
+            print('Crawling content added to database:', self.db_name)
         try:
-            self.list = pickle.load(open(os.path.join(DBPATH, db_name + '.db'), "rb"))
+            self.list = pickle.load(open(os.path.join(DBPATH, self.db_name + '.db'), "rb"))
             if self.list['Date created'] == str(date.today()) \
             and self.list['Config file'] == config_file:
-                print('Using current database:', db_name)
+                print('Using current database:', self.db_name)
             else:
                 pickleDump()
         except:

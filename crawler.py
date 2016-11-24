@@ -6,19 +6,24 @@ import pickle
 WORK_DIR = os.getcwd()
 DB_DIR = os.path.join(WORK_DIR, 'crawl-DB')
 PICTURE_STORAGE = os.path.join(WORK_DIR, 'crawl-images')
-STANDARD_DICT = {'crawl': [], 'is picture': {}}
 
 if not os.path.exists(DB_DIR):
     os.makedirs(DB_DIR)
 if not os.path.exists(PICTURE_STORAGE):
     os.makedirs(PICTURE_STORAGE)
 
+def makeImageDatabaseDirectory(db_dir=None, img_name=None):
+    if not os.path.exists(db_dir):
+        os.makedirs(db_dir)
+    return os.path.join(db_dir, img_name)
+
 def list_number_evaluation(list_number, list_number_selection, selection):
     selectionsDictionary = {}
     if list_number != None or list_number_selection != None:
         try:
             selection = BeautifulSoup.select(selection[list_number], list_number_selection)
-            selectionsDictionary.update({'list_number': list_number, 'list_number_selection': list_number_selection})
+            selectionsDictionary.update({'list_number': list_number,
+                'list_number_selection': list_number_selection})
         except:
             if list_number == None:
                 errorAttribute = 'list_number'
@@ -45,68 +50,76 @@ class ArticleCrawler():
     for object in investing.list:
         print(object['Time'] + '\t' + object['Currency'] + '\t' + object['Headline'])
     """
-    def __init__(self, website):
+    def __init__(self, website, db_name):
         self.website = website
-        self.list = STANDARD_DICT
+        self.dict = {'crawl': [], 'is picture': {}}
         self.selections = []
         self.request = None
-        self.db_file = os.path.join(DB_DIR, self.website.split(".", 1)[1] + ".db")
+        self.db_name = db_name
 
     def new_request(self, sub_link):
         request = requests.get(self.website + sub_link)
         self.soup = BeautifulSoup(request.text, "lxml")
         self.request = sub_link
 
-    def new_list(self, content_selection, title, get_selection=None, list_number=None, list_number_selection=None, is_picture=False):
-        self.list = STANDARD_DICT
+    def new_list(self, content_selection, title, get_selection=None, list_number=None,
+            list_number_selection=None, is_picture=False):
+        print('\n\n\n\nStandard dict:\n' + str(self.dict) + '\n\n\n\n')
         self.selections.clear()
         selectionsDictionary = {}
         selection = self.soup.select(content_selection)
-        selectionsDictionary, selection = list_number_evaluation(list_number, list_number_selection, selection)
-        self.list['is picture'].update({title: is_picture})
+        selectionsDictionary, selection = list_number_evaluation(list_number,
+                list_number_selection, selection)
+        self.dict['is picture'].update({title: is_picture})
         for object in selection:
             if is_picture:
                 picture_link = self.website + object.get("href")
-                absolute_picture_path = os.path.join(PICTURE_STORAGE, os.path.split(picture_link)[1])
-                picture = open(absolute_picture_path, 'wb')
-                picture.write(requests.get(picture_link).content)
-                picture.close()
-                self.list['crawl'][count].update({title: absolute_picture_path})
+                absolute_picture_path = makeImageDatabaseDirectory(db_dir=os.path.join(PICTURE_STORAGE, 
+                    self.db_name, title), img_name=os.path.split(picture_link)[1])
+                with open(absolute_picture_path, 'wb') as picture:
+                    picture.write(requests.get(picture_link).content)
+                self.dict['crawl'][count].update({title: absolute_picture_path})
             elif get_selection == None:
-                self.list['crawl'].append({title: object.getText().strip()})
+                self.dict['crawl'].append({title: object.getText().strip()})
             else:
-                self.list['crawl'].append({title: object.get(get_selection)})
-        selectionsDictionary.update({'title': title, 'content_selection': content_selection, 'get_selection': get_selection, 'is_picture': is_picture})
+                self.dict['crawl'].append({title: object.get(get_selection)})
+        selectionsDictionary.update({'title': title, 'content_selection': content_selection,
+            'get_selection': get_selection, 'is_picture': is_picture})
         self.selections.append(selectionsDictionary)
-        return self.list
+        return self.dict
 
-    def addto_list(self, content_selection, title, get_selection=None, list_number=None, list_number_selection=None, is_picture=False):
+    def addto_list(self, content_selection, title, get_selection=None, list_number=None,
+            list_number_selection=None, is_picture=False):
         selectionsDictionary = {}
         selection = self.soup.select(content_selection)
-        selectionsDictionary, selection = list_number_evaluation(list_number, list_number_selection, selection)
-        self.list['is picture'].update({title: is_picture})
+        selectionsDictionary, selection = list_number_evaluation(list_number,
+                list_number_selection, selection)
+        self.dict['is picture'].update({title: is_picture})
         for count,object in enumerate(selection):
             if is_picture:
                 picture_link = self.website + object.get("href")
-                absolute_picture_path = os.path.join(PICTURE_STORAGE, os.path.split(picture_link)[1])
-                picture = open(absolute_picture_path, 'wb')
-                picture.write(requests.get(picture_link).content)
-                picture.close()
-                self.list['crawl'][count].update({title: absolute_picture_path})
+                absolute_picture_path = makeImageDatabaseDirectory(db_dir=os.path.join(PICTURE_STORAGE, 
+                    self.db_name, title), img_name=os.path.split(picture_link)[1])
+                with open(absolute_picture_path, 'wb') as picture:
+                    picture.write(requests.get(picture_link).content)
+                self.dict['crawl'][count].update({title: absolute_picture_path})
             elif get_selection == None:
-                self.list['crawl'][count].update({title: object.getText().strip()})
+                self.dict['crawl'][count].update({title: object.getText().strip()})
             else:
-                self.list['crawl'][count].update({title: object.get(get_selection)})
-        selectionsDictionary.update({'title': title, 'content_selection': content_selection, 'get_selection': get_selection, 'is_picture': is_picture})
+                self.dict['crawl'][count].update({title: object.get(get_selection)})
+        selectionsDictionary.update({'title': title, 'content_selection': content_selection,
+            'get_selection': get_selection, 'is_picture': is_picture})
         self.selections.append(selectionsDictionary)
-        return self.list
+        return self.dict
 
     # Not robust enough for anything other than hrafn:
-    def addto_list_expandonlink(self, link_selection, content_selection, title, get_selection=None, list_number=None, list_number_selection=None, is_picture=False):
+    def addto_list_expandonlink(self, link_selection, content_selection, title, get_selection=None,
+            list_number=None, list_number_selection=None, is_picture=False):
         selectionsDictionary = {}
         selection = self.soup.select(content_selection)
-        selectionsDictionary, selection = list_number_evaluation(list_number, list_number_selection, selection)
-        self.list['is picture'].update({title: is_picture})
+        selectionsDictionary, selection = list_number_evaluation(list_number,
+                list_number_selection, selection)
+        self.dict['is picture'].update({title: is_picture})
         for count,object in enumerate(selection):
             link = object.get("href")
             request = requests.get(self.website + link)
@@ -114,16 +127,18 @@ class ArticleCrawler():
             selection = soup.select(link_selection)
             if is_picture:
                 picture_link = selection[0].get("href")
-                absolute_picture_path = os.path.join(PICTURE_STORAGE + os.path.split(picture_link)[1])
-                picture = open(absolute_picture_path, 'wb')
-                picture.write(requests.get(picture_link).content)
-                picture.close()
-                self.list['crawl'][count].update({title: absolute_picture_path})
+                absolute_picture_path = makeImageDatabaseDirectory(db_dir=os.path.join(PICTURE_STORAGE, 
+                    self.db_name, title), img_name=os.path.split(picture_link)[1])
+                with open(absolute_picture_path, 'wb') as picture:
+                    picture.write(requests.get(picture_link).content)
+                self.dict['crawl'][count].update({title: absolute_picture_path})
             elif get_selection == None:
-                self.list['crawl'][count].update({title: selection[0].getText().strip()})
+                self.dict['crawl'][count].update({title: selection[0].getText().strip()})
             else:
-                self.list['crawl'][count].update({title: selection[0].get(get_selection)})
-        selectionsDictionary.update({'title': title, 'content_selection': content_selection, 'get_selection': get_selection, 'link_selection': link_selection, 'is_picture': is_picture})
+                self.dict['crawl'][count].update({title: selection[0].get(get_selection)})
+        selectionsDictionary.update({'title': title, 'content_selection': content_selection,
+            'get_selection': get_selection, 'link_selection': link_selection,
+            'is_picture': is_picture})
         self.selections.append(selectionsDictionary)
     '''
     # Need to add support for list_number and list_number_selection
@@ -133,7 +148,7 @@ class ArticleCrawler():
             selection = self.soup.select(selections['content_selection'])
             for count,object in enumerate(selection):
                 if selections['get_selection'] == None:
-                    self.list[count][selections['title']] = selection[count].getText().strip()
+                    self.dict[count][selections['title']] = selection[count].getText().strip()
                 else:
-                    self.list[count][selections['title']] = selection[count].get(selections['get_selection'])
+                    self.dict[count][selections['title']] = selection[count].get(selections['get_selection'])
     '''
