@@ -1,13 +1,13 @@
 from glob import glob
 import re
-from os import path
+import os
 
 import hrafnauga
 import hrafnaklo
 import crawler
 
-HRAFNPATH = path.dirname(path.abspath(__file__))
-ITEMLIST = glob(HRAFNPATH + "/content/*")
+WORK_DIR = os.path.dirname(os.path.abspath(__file__))
+ITEMLIST = glob(WORK_DIR + "/content/*")
 ITEMLIST.sort()
 HRAFN = hrafnaklo.SortHrafnContent(ITEMLIST)
 HRAFNDICTIONARY = HRAFN.create_dictionary()
@@ -46,13 +46,23 @@ for item in HRAFNDICTIONARY:
         list.reverse()
         while len(list) != 0:
             with open(list.pop()) as file:
-                db_name = path.basename(file.name)
+                db_name = os.path.basename(file.name)
                 cleanup = file.readlines()
-                crawler = hrafnaklo.WebCrawler(db_name=db_name)
+                # db_name is equal to content file name
+                crawler = hrafnaklo.WebCrawler(db_name=db_name, picture_storage=os.path.join(WORK_DIR, 'db/images'))
                 crawled = crawler.run(config_file=cleanup)
                 font_and_placement = hrafnaklo.WebFontAndPlacement.run(cleanup)
                 #print(font_and_placement['Placement'])
-                print(crawled)
+                #print(crawled)
             webshow  = hrafnauga.showWebContent(crawled, content_placement=font_and_placement['Placement'], content_font=font_and_placement['Font'], display_time=5, word_latency=0)
             webshow.showInfo()
             webshow.run()
+
+
+
+
+
+
+
+
+

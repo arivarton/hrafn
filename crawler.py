@@ -1,16 +1,9 @@
+import requests
 import os
 from bs4 import BeautifulSoup
-import requests
 import pickle
 
-WORK_DIR = os.getcwd()
-DB_DIR = os.path.join(WORK_DIR, 'crawl-DB')
-PICTURE_STORAGE = os.path.join(WORK_DIR, 'crawl-images')
-
-if not os.path.exists(DB_DIR):
-    os.makedirs(DB_DIR)
-if not os.path.exists(PICTURE_STORAGE):
-    os.makedirs(PICTURE_STORAGE)
+WORK_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def makeImageDatabaseDirectory(db_dir=None, img_name=None):
     if not os.path.exists(db_dir):
@@ -50,12 +43,13 @@ class ArticleCrawler():
     for object in investing.list:
         print(object['Time'] + '\t' + object['Currency'] + '\t' + object['Headline'])
     """
-    def __init__(self, website, db_name):
+    def __init__(self, website, db_name, picture_storage):
         self.website = website
         self.dict = {'crawl': [], 'is picture': {}}
         self.selections = []
         self.request = None
         self.db_name = db_name
+        self.picture_storage = picture_storage
 
     def new_request(self, sub_link):
         request = requests.get(self.website + sub_link)
@@ -74,8 +68,10 @@ class ArticleCrawler():
         for object in selection:
             if is_picture:
                 picture_link = self.website + object.get("href")
-                absolute_picture_path = makeImageDatabaseDirectory(db_dir=os.path.join(PICTURE_STORAGE, 
-                    self.db_name, title), img_name=os.path.split(picture_link)[1])
+                absolute_picture_path = makeImageDatabaseDirectory(
+                        db_dir=os.path.join(self.picture_storage, self.db_name, title),
+                        img_name=os.path.split(picture_link)[1]
+                        )
                 with open(absolute_picture_path, 'wb') as picture:
                     picture.write(requests.get(picture_link).content)
                 self.dict['crawl'][count].update({title: absolute_picture_path})
@@ -98,8 +94,10 @@ class ArticleCrawler():
         for count,object in enumerate(selection):
             if is_picture:
                 picture_link = self.website + object.get("href")
-                absolute_picture_path = makeImageDatabaseDirectory(db_dir=os.path.join(PICTURE_STORAGE, 
-                    self.db_name, title), img_name=os.path.split(picture_link)[1])
+                absolute_picture_path = makeImageDatabaseDirectory(
+                    db_dir=os.path.join(self.picture_storage, self.db_name, title),
+                    img_name=os.path.split(picture_link)[1]
+                    )
                 with open(absolute_picture_path, 'wb') as picture:
                     picture.write(requests.get(picture_link).content)
                 self.dict['crawl'][count].update({title: absolute_picture_path})
@@ -127,8 +125,10 @@ class ArticleCrawler():
             selection = soup.select(link_selection)
             if is_picture:
                 picture_link = selection[0].get("href")
-                absolute_picture_path = makeImageDatabaseDirectory(db_dir=os.path.join(PICTURE_STORAGE, 
-                    self.db_name, title), img_name=os.path.split(picture_link)[1])
+                absolute_picture_path = makeImageDatabaseDirectory(
+                        db_dir=os.path.join(self.picture_storage, self.db_name, title),
+                        img_name=os.path.split(picture_link)[1]
+                        )
                 with open(absolute_picture_path, 'wb') as picture:
                     picture.write(requests.get(picture_link).content)
                 self.dict['crawl'][count].update({title: absolute_picture_path})

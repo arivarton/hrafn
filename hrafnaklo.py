@@ -9,9 +9,9 @@ from datetime import date
 import crawler
 #from hrafnauga import *
 
-HRAFNPATH = os.path.dirname(os.path.abspath(__file__))
-DBPATH = os.path.join(HRAFNPATH, 'db')
-file_array = os.listdir(os.path.join(HRAFNPATH, 'content'))
+WORK_DIR = os.path.dirname(os.path.abspath(__file__))
+DBPATH = os.path.join(WORK_DIR, 'db')
+file_array = os.listdir(os.path.join(WORK_DIR, 'content'))
 file_array.sort()
 video_suffix = ["mp4","mkv","avi"]
 picture_suffix = ["jpg","jpeg","gif","png"]
@@ -91,21 +91,27 @@ class WebConfigFileParser():
             self.sub_link = temp
 
         #All
+        #Content selection
         temp = re.search(r'content_selection=["\']([^"\']*)["\']', line)
         if temp:
             self.content_selection = temp.group(1)
+        #Title
         temp = re.search(r'title=["\']([^"\']*)["\']', line)
         if temp:
             self.title = temp.group(1)
+        #Get selection
         temp = re.search(r'get_selection=["\']([^"\']*)["\']', line)
         if temp:
             self.get_selection = temp.group(1)
+        #List number
         temp = re.search(r'list_number=["\']([^"\']*)["\']', line)
         if temp:
             self.list_number = int(temp.group(1))
+        #List number selection
         temp = re.search(r'list_number_selection=["\']([^"\']*)["\']', line)
         if temp:
             self.list_number_selection = temp.group(1)
+        #Is picture
         temp = re.search(r'is_picture=["\']([^"\']*)["\']', line)
         if temp:
             if temp.group(1).lower() == "true":
@@ -149,18 +155,22 @@ class WebConfigFileParser():
             self.font_weight = temp.group(1)
 
 class WebCrawler():
-    def __init__(self, db_name):
+    def __init__(self, db_name, picture_storage):
         self.run_check = True
         if not os.path.exists(DBPATH):
             os.makedirs(DBPATH)
         self.db_name = db_name
+        if not os.path.exists(picture_storage):
+            os.makedirs(picture_storage)
+        self.picture_storage = picture_storage
 
     def crawl(self, list):
         for line in list:
             attributesFromFile = WebConfigFileParser()
             attributesFromFile.run(line.strip())
             if attributesFromFile.website is not None:
-                catchedContent = crawler.ArticleCrawler(website=attributesFromFile.website, db_name=self.db_name)
+                catchedContent = crawler.ArticleCrawler(website=attributesFromFile.website,
+                        db_name=self.db_name, picture_storage=self.picture_storage)
             elif attributesFromFile.sub_link is not None:
                 catchedContent.new_request(attributesFromFile.sub_link)
             elif attributesFromFile.request_type == 'new_list':
@@ -172,7 +182,8 @@ class WebCrawler():
                     list_number=attributesFromFile.list_number,
                     list_number_selection=attributesFromFile.list_number_selection,
                     is_picture=attributesFromFile.is_picture)
-                print('Added crawling content for', attributesFromFile.request_type, 'with title:', attributesFromFile.title)
+                print('Added crawling content for', attributesFromFile.request_type,
+                        'with title:', attributesFromFile.title)
 
             elif attributesFromFile.request_type == 'addto_list':
                 # Crawl website and add to list
@@ -183,7 +194,8 @@ class WebCrawler():
                     list_number=attributesFromFile.list_number,
                     list_number_selection=attributesFromFile.list_number_selection,
                     is_picture=attributesFromFile.is_picture)
-                print('Added crawling content for', attributesFromFile.request_type, 'with title:', attributesFromFile.title)
+                print('Added crawling content for', attributesFromFile.request_type,
+                        'with title:', attributesFromFile.title)
 
             elif attributesFromFile.request_type == 'addto_list_expandonlink':
                 # Crawl website and add to list
@@ -195,11 +207,12 @@ class WebCrawler():
                     list_number=attributesFromFile.list_number,
                     list_number_selection=attributesFromFile.list_number_selection,
                     is_picture=attributesFromFile.is_picture)
-                print('Added crawling content for', attributesFromFile.request_type, 'with title:', attributesFromFile.title)
-        return {'Crawled': catchedContent.dict}
+                print('Added crawling content for', attributesFromFile.request_type,
+                        'with title:', attributesFromFile.title)
+        return catchedContent.dict
 
     def run(self, config_file):
-        def pickleDump():
+        def newDatabaseAndContent():
             self.list = self.crawl(config_file)
             self.list.update({'Date created': str(date.today())})
             self.list.update({'Config file': config_file})
@@ -211,10 +224,10 @@ class WebCrawler():
             and self.list['Config file'] == config_file:
                 print('Using current database:', self.db_name)
             else:
-                pickleDump()
+                newDatabaseAndContent()
         except:
-            pickleDump()
-        return self.list['Crawled']
+            newDatabaseAndContent()
+        return self.list
 
 class WebFontAndPlacement():
     def run(list):
@@ -238,9 +251,11 @@ class WebFontAndPlacement():
                     'Size': attributesFromFile.font_size,
                     'Weight': attributesFromFile.font_weight}
                 })
-                print('Added placement and font content for', attributesFromFile.request_type, 'with title:', attributesFromFile.title)
+                print('Added placement and font content for', attributesFromFile.request_type,
+                        'with title:', attributesFromFile.title)
             else:
-                print('Will not add placement and font content for:', attributesFromFile.request_type, 'with title:', attributesFromFile.title)
+                print('Will not add placement and font content for:',
+                        attributesFromFile.request_type, 'with title:', attributesFromFile.title)
         return {'Placement': placement, 'Font': font}
 
 
