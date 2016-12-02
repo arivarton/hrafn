@@ -54,7 +54,7 @@ for item in HRAFNDICTIONARY:
                 font_and_placement = hrafnaklo.WebFontAndPlacement.run(cleanup)
                 #print(font_and_placement['Placement'])
                 #print(crawled)
-            webshow  = hrafnauga.showWebContent(crawled, content_placement=font_and_placement['Placement'], content_font=font_and_placement['Font'], display_time=5, word_latency=0)
+            webshow  = hrafnauga.showWebContent(crawled, content_placement=font_and_placement['Placement'], content_font=font_and_placement['Font'], display_time=1, word_latency=0)
             webshow.showInfo()
             webshow.run()
 

@@ -70,7 +70,7 @@ class showWebContent(tk.Tk):
         self.windowWidth = self.winfo_screenwidth()
         self.windowHeight = self.winfo_screenheight()
         self.attributes("-fullscreen", True)
-        self.contentCount = len(content_list)
+        self.contentCount = len(content_list['crawl'])
         self.windowCenterWidth = self.windowWidth / 2
         self.windowCenterHeight = self.windowHeight / 2
         original = Image.open(imagePath)
