@@ -4,13 +4,13 @@ import os
 
 import hrafnauga
 import hrafnaklo
-import crawler
 
 WORK_DIR = os.path.dirname(os.path.abspath(__file__))
 ITEMLIST = glob(WORK_DIR + "/content/*")
 ITEMLIST.sort()
 HRAFN = hrafnaklo.SortHrafnContent(ITEMLIST)
 HRAFNDICTIONARY = HRAFN.create_dictionary()
+
 
 # from http://nedbatchelder.com/blog/200712/human_sorting.html
 def tryint(s):
@@ -19,8 +19,10 @@ def tryint(s):
     except:
         return s
 
+
 def alphanum_key(s):
-    return [ tryint(c) for c in re.split('([0-9]+)', s) ]
+    return [tryint(c) for c in re.split('([0-9]+)', s)]
+
 
 def sort_nicely(l):
     l.sort(key=alphanum_key)
@@ -31,14 +33,14 @@ for item in HRAFNDICTIONARY:
         del list[0]
         sort_nicely(list)
         list.reverse()
-        slideshow = showImage(list, 10)
+        slideshow = hrafnauga.showImage(list, 10)
         slideshow.showPicture()
         slideshow.run()
     elif list[0] == 'video':
         del list[0]
         sort_nicely(list)
         list.reverse()
-        videoshow = playVideo()
+        videoshow = hrafnauga.playVideo()
         videoshow.run(list)
     elif list[0] == 'web':
         del list[0]
@@ -49,20 +51,13 @@ for item in HRAFNDICTIONARY:
                 db_name = os.path.basename(file.name)
                 cleanup = file.readlines()
                 # db_name is equal to content file name
-                crawler = hrafnaklo.WebCrawler(db_name=db_name, picture_storage=os.path.join(WORK_DIR, 'db/images'))
+                crawler = hrafnaklo.WebCrawler(db_name=db_name,
+                                               picture_storage=os.path.join(WORK_DIR, 'db/images'))
                 crawled = crawler.run(config_file=cleanup)
                 font_and_placement = hrafnaklo.WebFontAndPlacement.run(cleanup)
-                #print(font_and_placement['Placement'])
-                #print(crawled)
-            webshow  = hrafnauga.showWebContent(crawled, content_placement=font_and_placement['Placement'], content_font=font_and_placement['Font'], display_time=1, word_latency=0)
+            webshow = hrafnauga.showWebContent(crawled,
+                                               content_placement=font_and_placement['Placement'],
+                                               content_font=font_and_placement['Font'],
+                                               display_time=1, word_latency=0)
             webshow.showInfo()
             webshow.run()
-
-
-
-
-
-
-
-
-

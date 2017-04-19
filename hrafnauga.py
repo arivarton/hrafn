@@ -1,14 +1,12 @@
 import tkinter as tk
-from PIL import Image,ImageTk
+from PIL import Image, ImageTk
 from subprocess import call
 from os import listdir, path
-from glob import glob
-from datetime import date
-import pickle
 
 WORK_DIR = path.dirname(path.abspath(__file__))
 
-#Display images from a list
+
+# Display images from a list
 class showImage(tk.Tk):
     """
     Shows all images in a list/folder using Tkinter and
@@ -32,7 +30,7 @@ class showImage(tk.Tk):
             print("Image on display: " + imagePath)
             original = Image.open(imagePath)
             image = original.resize((self.winfo_screenwidth(),
-                self.winfo_screenheight()),Image.ANTIALIAS)
+                                     self.winfo_screenheight()), Image.ANTIALIAS)
             imageDisplay = ImageTk.PhotoImage(image)
             self.pictureFrame.image = imageDisplay
             self.pictureFrame.config(image=imageDisplay)
@@ -41,6 +39,7 @@ class showImage(tk.Tk):
 
     def run(self):
         self.mainloop()
+
 
 # Play videos from a list
 class playVideo():
@@ -52,12 +51,15 @@ class playVideo():
             print("Playing video file: " + video)
             call(["mplayer", video, "-fs", "-zoom"])
 
+
 # Show web content from a config file
 class showWebContent(tk.Tk):
     """
     Shows content from websites
     """
-    def __init__(self, content_list, content_placement, content_font, display_time=10, word_latency=1, imagePath=(WORK_DIR + "/images/background1.png")):
+    def __init__(self, content_list, content_placement, content_font,
+                 display_time=10, word_latency=1,
+                 imagePath=(WORK_DIR + "/images/background1.png")):
         """
         content_list must contain lists with 2 objects each, first the topic, second for content.
         """
@@ -74,14 +76,18 @@ class showWebContent(tk.Tk):
         self.windowCenterWidth = self.windowWidth / 2
         self.windowCenterHeight = self.windowHeight / 2
         original = Image.open(imagePath)
-        image = original.resize(
-            (self.windowWidth, self.windowHeight),Image.ANTIALIAS)
+        image = original.resize((self.windowWidth, self.windowHeight),
+                                Image.ANTIALIAS)
         self.imageDisplay = ImageTk.PhotoImage(image)
-        self.canvas = tk.Canvas(self, width=self.windowWidth,
-            height=self.windowHeight, background="black", highlightcolor="black",
-            highlightbackground="black")
-        self.canvas.create_image(self.windowCenterWidth, self.windowCenterHeight,
-            image=self.imageDisplay)
+        self.canvas = tk.Canvas(self,
+                                width=self.windowWidth,
+                                height=self.windowHeight,
+                                background="black",
+                                highlightcolor="black",
+                                highlightbackground="black")
+        self.canvas.create_image(self.windowCenterWidth,
+                                 self.windowCenterHeight,
+                                 image=self.imageDisplay)
         self.canvas_list = []
         self.time = None
         self.content = None
@@ -91,6 +97,7 @@ class showWebContent(tk.Tk):
 
     def showInfo(self):
         self.image_display = None
+
         def dynamicWidth(value):
             if value.lower() == "center":
                 return self.windowCenterWidth
@@ -109,21 +116,28 @@ class showWebContent(tk.Tk):
                         image_path = web_content[value]
                         print('First picture run ' + str(image_path))
                         original = Image.open(image_path)
-                        image = original.resize(
-                            (300, 300),Image.ANTIALIAS)
+                        image = original.resize((300, 300),
+                                                Image.ANTIALIAS)
                         self.image_display = ImageTk.PhotoImage(original)
                         self.canvas_list.append(
                             self.canvas.create_image(
-                                self.windowCenterWidth, self.windowCenterHeight, image=self.image_display
+                                self.windowCenterWidth,
+                                self.windowCenterHeight,
+                                image=self.image_display
                             )
                         )
                     else:
                         self.canvas_list.append(
                             self.canvas.create_text(
                                 dynamicWidth(self.content_placement[value]["Width"]),
-                                self.content_placement[value]["Height"], justify=self.content_placement[value]["Justify"],
-                                anchor=self.content_placement[value]["Anchor"], text=web_content[value], fill="white",
-                                font=(self.content_font[value]["Type"], self.content_font[value]["Size"], self.content_font[value]["Weight"]), width=(self.windowWidth - 100)
+                                self.content_placement[value]["Height"],
+                                justify=self.content_placement[value]["Justify"],
+                                anchor=self.content_placement[value]["Anchor"],
+                                text=web_content[value], fill="white",
+                                font=(self.content_font[value]["Type"],
+                                      self.content_font[value]["Size"],
+                                      self.content_font[value]["Weight"]),
+                                width=(self.windowWidth - 100)
                             )
                         )
                 else:
@@ -131,13 +145,13 @@ class showWebContent(tk.Tk):
                         image_path = web_content[value]
                         print('Second picture run ' + str(image_path))
                         original = Image.open(image_path)
-                        image = original.resize(
-                            (300, 300),Image.ANTIALIAS)
+                        image = original.resize((300, 300),
+                                                Image.ANTIALIAS)
                         self.image_display = ImageTk.PhotoImage(image)
                         self.canvas_list.append(
-                            self.canvas.create_image(
-                                self.windowCenterWidth, self.windowCenterHeight, image=self.image_display
-                            )
+                            self.canvas.create_image(self.windowCenterWidth,
+                                                     self.windowCenterHeight,
+                                                     image=self.image_display)
                         )
                     else:
                         self.canvas.itemconfigure(
