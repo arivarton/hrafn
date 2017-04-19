@@ -1,5 +1,0 @@
-website="http://www.visitakureyri.is"
-sub_link="/en/calendar/index?month=$(month)&year=$(year)"
-new_list(content_selection=".content ul", title="Topic", list_number="3", list_number_selection="a", is_picture="False", placement(width="Center", height="100", justify="center", anchor="n"), font(type="FreeSans", size="22", weight="bold"))
-addto_list_expandonlink(link_selection="h5", content_selection=".content ul", title="Time", list_number="3", list_number_selection="a", is_picture="False", placement(width="Center", height="200", justify="center", anchor="n"), font(type="FreeSans", size="16", weight="bold"))
-addto_list_expandonlink(link_selection=".details", content_selection=".content ul", title="Content", list_number="3", list_number_selection="a", is_picture="False", placement(width="Center", height="300", justify="center", anchor="n"), font(type="FreeSerif", size="12", weight="normal"))
