@@ -87,7 +87,6 @@ ENV/
 
 # Rope project settings
 .ropeproject
-<<<<<<< HEAD
 
 # Project specific
 content/
@@ -97,5 +96,4 @@ test.py
 test/
 *.swp
 images/
-=======
->>>>>>> d34e2191ff5ab620c871cec0445489c4fd69a0ac
+*.orig
