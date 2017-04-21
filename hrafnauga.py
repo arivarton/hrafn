@@ -58,7 +58,7 @@ class showWebContent(tk.Tk):
     Shows content from websites
     """
     def __init__(self, content_list, content_placement, content_font,
-                 display_time=10, word_latency=1,
+                 display_time, word_latency=1,
                  imagePath=(WORK_DIR + "/images/background1.png")):
         """
         content_list must contain lists with 2 objects each, first the topic, second for content.

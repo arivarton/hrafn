@@ -58,6 +58,6 @@ for item in HRAFNDICTIONARY:
             webshow = hrafnauga.showWebContent(crawled,
                                                content_placement=font_and_placement['Placement'],
                                                content_font=font_and_placement['Font'],
-                                               display_time=1, word_latency=0)
+                                               display_time=crawled['Display time'], word_latency=0)
             webshow.showInfo()
             webshow.run()
