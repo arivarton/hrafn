@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 WORK_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def makeImageDatabaseDirectory(db_dir=None, img_name=None):
+def create_dir_for_stored_images(db_dir=None, img_name=None):
     if not os.path.exists(db_dir):
         os.makedirs(db_dir)
     return os.path.join(db_dir, img_name)
@@ -67,7 +67,7 @@ class ArticleCrawler():
         for count, object in enumerate(selection):
             if kwargs['is_picture']:
                 picture_link = self.website + object.get("href")
-                absolute_picture_path = makeImageDatabaseDirectory(
+                absolute_picture_path = create_dir_for_stored_images(
                         db_dir=os.path.join(self.picture_storage, self.db_name, kwargs['title']),
                         img_name=os.path.split(picture_link)[1]
                         )
@@ -120,7 +120,7 @@ class ArticleCrawler():
             selection = soup.select(link_selection)
             if is_picture:
                 picture_link = selection[0].get("href")
-                absolute_picture_path = makeImageDatabaseDirectory(
+                absolute_picture_path = create_dir_for_stored_images(
                         db_dir=os.path.join(self.picture_storage, self.db_name, title),
                         img_name=os.path.split(picture_link)[1]
                         )

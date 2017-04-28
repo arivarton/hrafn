@@ -34,13 +34,13 @@ for item in HRAFNDICTIONARY:
         sort_nicely(list)
         list.reverse()
         slideshow = hrafnauga.showImage(list, 10)
-        slideshow.showPicture()
+        slideshow.show_picture()
         slideshow.run()
     elif list[0] == 'video':
         del list[0]
         sort_nicely(list)
         list.reverse()
-        videoshow = hrafnauga.playVideo()
+        videoshow = hrafnauga.PlayVideo()
         videoshow.run(list)
     elif list[0] == 'web':
         del list[0]
@@ -59,5 +59,5 @@ for item in HRAFNDICTIONARY:
                                                content_placement=font_and_placement['Placement'],
                                                content_font=font_and_placement['Font'],
                                                display_time=crawled['Display time'], word_latency=0)
-            webshow.showInfo()
+            webshow.show_info()
             webshow.run()

@@ -21,7 +21,7 @@ class showImage(tk.Tk):
         self.pictureCount = len(pictureList)
         self.imageDisplayTime = displayTime * 1000
 
-    def showPicture(self):
+    def show_picture(self):
         if(self.pictureCount <= 0):
             self.destroy()
         else:
@@ -35,14 +35,14 @@ class showImage(tk.Tk):
             self.pictureFrame.image = imageDisplay
             self.pictureFrame.config(image=imageDisplay)
             self.pictureFrame.pack()
-            self.after(self.imageDisplayTime, self.showPicture)
+            self.after(self.imageDisplayTime, self.show_picture)
 
     def run(self):
         self.mainloop()
 
 
 # Play videos from a list
-class playVideo():
+class PlayVideo():
     """
     Plays video files using mplayer.
     """
@@ -95,7 +95,7 @@ class showWebContent(tk.Tk):
         self.backgroundImageCount = len(listdir(WORK_DIR + "/images/"))
         self.first_run = True
 
-    def showInfo(self):
+    def show_info(self):
         self.image_display = None
 
         def dynamicWidth(value):
@@ -165,7 +165,7 @@ class showWebContent(tk.Tk):
                 added_time = 0
             self.canvas.pack()
             self.first_run = False
-            self.after(self.display_time + added_time, self.showInfo)
+            self.after(self.display_time + added_time, self.show_info)
 
     def run(self):
         self.mainloop()
