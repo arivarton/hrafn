@@ -92,7 +92,10 @@ class WebConfigFileParser():
         #List number
         self.list_number = self._search_and_set_argument(r'list_number=["\']([^"\']*)["\']', line, 1)
         if self.list_number is not None:
-            self.list_number = int(self.list_number)
+            if str(self.list_number).lower() == 'today':
+                self.list_number = date.today().day - 1
+            else:
+                self.list_number = int(self.list_number)
         #List number selection
         self.list_number_selection = self._search_and_set_argument(r'list_number_selection=["\']([^"\']*)["\']', line, 1)
         #Is picture
