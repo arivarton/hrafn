@@ -55,14 +55,21 @@ class ArticleCrawler():
 
     def new_request(self, sub_link):
         request = requests.get(self.website + sub_link)
-        self.soup = BeautifulSoup(request.text, "lxml")
+        content = request.content
+        request.close()
+        self.soup = BeautifulSoup(content.decode('cp1252', 'ignore'), 'lxml')
+        #  self.soup = BeautifulSoup(request.decode('cp819', 'ignore'), 'lxml')
+        #  self.soup = BeautifulSoup(request.decode('latin-1', 'ignore'), 'lxml')
+        #  self.soup = BeautifulSoup(request.content, 'lxml')
+        #  request.close()
         self.request = sub_link
 
     def list_addition(self, new_list, **kwargs):
         selectionsDictionary = {}
         selection = self.soup.select(kwargs['content_selection'])
         selectionsDictionary, selection = list_number_evaluation(kwargs['list_number'],
-                                                                 kwargs['list_number_selection'], selection)
+                                                                 kwargs['list_number_selection'],
+                                                                 selection)
         self.dict['is picture'].update({kwargs['title']: kwargs['is_picture']})
         for count, object in enumerate(selection):
             if kwargs['is_picture']:
@@ -116,7 +123,9 @@ class ArticleCrawler():
         for count, object in enumerate(selection):
             link = object.get("href")
             request = requests.get(self.website + link)
-            soup = BeautifulSoup(request.text, "lxml")
+            content = request.content
+            request.close()
+            soup = BeautifulSoup(content.decode('cp1252', 'ignore'), "lxml")
             selection = soup.select(link_selection)
             if is_picture:
                 picture_link = selection[0].get("href")
