@@ -79,6 +79,8 @@ class WebConfigFileParser():
 
         # Set display time
         self.display_time = self._search_and_set_argument(r'display_time=["\'](.*)["\']', line, 1)
+        # Set word latency
+        self.word_latency = self._search_and_set_argument(r'word_latency=["\'](.*)["\']', line, 1)
 
         #All
         #Content selection
@@ -137,6 +139,7 @@ class WebCrawler():
 
     def crawl(self, config_file):
         display_time = 10
+        word_latency = 2
         for line in config_file:
             attributesFromFile = WebConfigFileParser()
             attributesFromFile.run(line.strip())
@@ -148,6 +151,8 @@ class WebCrawler():
                 catchedContent.new_request(attributesFromFile.sub_link)
             elif attributesFromFile.display_time is not None:
                 display_time = attributesFromFile.display_time
+            elif attributesFromFile.word_latency is not None:
+                word_latency = attributesFromFile.word_latency
             elif attributesFromFile.request_type == 'new_list':
                 # Crawl website and add to list
                 catchedContent.new_list(
@@ -184,14 +189,15 @@ class WebCrawler():
                     is_picture=attributesFromFile.is_picture)
                 print('Added crawling content for', attributesFromFile.request_type,
                       'with title:', attributesFromFile.title)
-        return catchedContent.dict, display_time
+        return catchedContent.dict, display_time, word_latency
 
     def run(self, config_file):
         def newDatabaseAndContent():
-            self.list, display_time = self.crawl(config_file)
+            self.list, display_time, word_latency = self.crawl(config_file)
             self.list.update({'Date created': str(date.today())})
             self.list.update({'Config file': config_file})
             self.list.update({'Display time': int(display_time)})
+            self.list.update({'Word latency': int(word_latency)})
             pickle.dump(self.list, open(os.path.join(DBPATH, self.db_name + '.db'), "wb"))
             print('Crawling content added to database:', self.db_name)
         try:

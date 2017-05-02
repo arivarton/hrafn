@@ -56,7 +56,7 @@ def run():
                 webshow = hrafnauga.showWebContent(crawled,
                                                    content_placement=font_and_placement['Placement'],
                                                    content_font=font_and_placement['Font'],
-                                                   display_time=crawled['Display time'], word_latency=0)
+                                                   display_time=crawled['Display time'], word_latency=crawled['Word latency'])
                 webshow.show_info()
                 webshow.run()
 
